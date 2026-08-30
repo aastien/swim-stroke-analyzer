@@ -23,6 +23,10 @@ frontend/build/
 *_report.txt
 *_analyzed.*
 
+# Isolated RTMPose benchmark environment
+experiments/rtmpose/.venv/
+.venv/
+
 # Design assistant outputs
 design_recommendations/
 
