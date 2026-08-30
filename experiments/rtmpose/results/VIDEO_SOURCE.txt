@@ -1,0 +1,8 @@
+Local benchmark clip (inference only; video never uploaded):
+  /tmp/swim-bench/freestyle_10s.mp4
+  10 seconds, 250 frames, 25 fps, 854x480
+
+Source (downloaded to this machine, then trimmed locally with ffmpeg):
+  Wikimedia Commons — Adam Brown wins 50m Freestyle gold at the 2011
+  British Gas Swimming Championships (webm, CC-licensed)
+  https://commons.wikimedia.org/wiki/File:Adam_Brown_wins_50m_Freestyle_gold_at_the_2011_British_Gas_Swimming_Championships.webm

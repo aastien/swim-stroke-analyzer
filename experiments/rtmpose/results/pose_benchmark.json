@@ -1,0 +1,337 @@
+{
+  "video": "/tmp/swim-bench/freestyle_10s.mp4",
+  "frames_compared": 250,
+  "source_fps": 25.0,
+  "width": 854,
+  "height": 480,
+  "usable_confidence_threshold": 0.5,
+  "common_landmarks": [
+    "nose",
+    "left_shoulder",
+    "right_shoulder",
+    "left_elbow",
+    "right_elbow",
+    "left_wrist",
+    "right_wrist",
+    "left_hip",
+    "right_hip",
+    "left_knee",
+    "right_knee",
+    "left_ankle",
+    "right_ankle"
+  ],
+  "processed_every_frame": true,
+  "excluded": [
+    "elbow catch quality",
+    "body rotation",
+    "centerline crossing",
+    "head lifting",
+    "knee technique",
+    "stroke rate",
+    "technique score",
+    "coaching recommendations"
+  ],
+  "mediapipe": {
+    "backend": "mediapipe",
+    "frames": 250,
+    "person_detected_frames": 250,
+    "person_detected_pct": 100.0,
+    "mean_usable_landmark_pct": 32.03076923076923,
+    "mean_landmark_confidence": 0.4427684463009173,
+    "dropouts_total": 14,
+    "dropout_rate_among_tracked": 0.013270142180094787,
+    "mean_jitter_px": 2.3428855544483196,
+    "inference_seconds": 3.057740319000004,
+    "init_seconds": 0.004457594999621506,
+    "effective_fps": 81.75972251357152,
+    "source_fps": 25.0,
+    "per_landmark": {
+      "nose": {
+        "usable_frame_pct": 100.0,
+        "usable_frames": 250,
+        "mean_confidence": 0.9999684834480286,
+        "dropouts": 0,
+        "mean_jitter_px": 1.1691160786863288,
+        "jitter_samples": 249
+      },
+      "left_shoulder": {
+        "usable_frame_pct": 100.0,
+        "usable_frames": 250,
+        "mean_confidence": 0.9987517099380493,
+        "dropouts": 0,
+        "mean_jitter_px": 0.6496220183029875,
+        "jitter_samples": 249
+      },
+      "right_shoulder": {
+        "usable_frame_pct": 100.0,
+        "usable_frames": 250,
+        "mean_confidence": 0.9976660857200622,
+        "dropouts": 0,
+        "mean_jitter_px": 0.5290832167357771,
+        "jitter_samples": 249
+      },
+      "left_elbow": {
+        "usable_frame_pct": 11.6,
+        "usable_frames": 29,
+        "mean_confidence": 0.7736764366626739,
+        "dropouts": 3,
+        "mean_jitter_px": 1.6065377412052995,
+        "jitter_samples": 26
+      },
+      "right_elbow": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.6369516053199769,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "left_wrist": {
+        "usable_frame_pct": 86.4,
+        "usable_frames": 216,
+        "mean_confidence": 0.8373712167739868,
+        "dropouts": 3,
+        "mean_jitter_px": 2.01328333598627,
+        "jitter_samples": 212
+      },
+      "right_wrist": {
+        "usable_frame_pct": 18.4,
+        "usable_frames": 46,
+        "mean_confidence": 0.4925124044418335,
+        "dropouts": 8,
+        "mean_jitter_px": 8.089670935773254,
+        "jitter_samples": 38
+      },
+      "left_hip": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.006174709348008037,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "right_hip": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.004567426563240587,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "left_knee": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.00584161130618304,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "right_knee": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.002202740561682731,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "left_ankle": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.00024818868984584694,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "right_ankle": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 5.718313835313893e-05,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      }
+    }
+  },
+  "rtmpose": {
+    "backend": "rtmpose",
+    "frames": 250,
+    "person_detected_frames": 250,
+    "person_detected_pct": 100.0,
+    "mean_usable_landmark_pct": 40.03076923076923,
+    "mean_landmark_confidence": 0.41858488495304036,
+    "dropouts_total": 47,
+    "dropout_rate_among_tracked": 0.034866468842729974,
+    "mean_jitter_px": 3.59465689220695,
+    "inference_seconds": 38.04120095700546,
+    "init_seconds": 8.859506368000439,
+    "effective_fps": 6.571821964363125,
+    "source_fps": 25.0,
+    "per_landmark": {
+      "nose": {
+        "usable_frame_pct": 100.0,
+        "usable_frames": 250,
+        "mean_confidence": 0.9644931423664093,
+        "dropouts": 0,
+        "mean_jitter_px": 2.277666560571572,
+        "jitter_samples": 249
+      },
+      "left_shoulder": {
+        "usable_frame_pct": 100.0,
+        "usable_frames": 250,
+        "mean_confidence": 0.7755826416015625,
+        "dropouts": 0,
+        "mean_jitter_px": 2.4210104270313137,
+        "jitter_samples": 249
+      },
+      "right_shoulder": {
+        "usable_frame_pct": 100.0,
+        "usable_frames": 250,
+        "mean_confidence": 0.7398404517173767,
+        "dropouts": 0,
+        "mean_jitter_px": 2.7397485139807882,
+        "jitter_samples": 249
+      },
+      "left_elbow": {
+        "usable_frame_pct": 70.0,
+        "usable_frames": 175,
+        "mean_confidence": 0.5251801571846009,
+        "dropouts": 19,
+        "mean_jitter_px": 4.874592199621482,
+        "jitter_samples": 155
+      },
+      "right_elbow": {
+        "usable_frame_pct": 50.4,
+        "usable_frames": 126,
+        "mean_confidence": 0.5045660660266876,
+        "dropouts": 28,
+        "mean_jitter_px": 4.444750824482287,
+        "jitter_samples": 97
+      },
+      "left_wrist": {
+        "usable_frame_pct": 100.0,
+        "usable_frames": 250,
+        "mean_confidence": 0.7402035322189331,
+        "dropouts": 0,
+        "mean_jitter_px": 4.810172827554258,
+        "jitter_samples": 249
+      },
+      "right_wrist": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.2193702301979065,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "left_hip": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.13501366984844207,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "right_hip": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.14103573668003083,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "left_knee": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.16349025785923005,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "right_knee": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.25608599346876143,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "left_ankle": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.1417639814913273,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      },
+      "right_ankle": {
+        "usable_frame_pct": 0.0,
+        "usable_frames": 0,
+        "mean_confidence": 0.1349776437282562,
+        "dropouts": 0,
+        "mean_jitter_px": null,
+        "jitter_samples": 0
+      }
+    }
+  },
+  "decision": {
+    "overall_raw_tracking": "mixed",
+    "coverage_winner": "rtmpose",
+    "stability_winner": "mediapipe",
+    "quality_votes": {
+      "mediapipe": 3,
+      "rtmpose": 1
+    },
+    "criteria": [
+      {
+        "metric": "person_detected_pct",
+        "mediapipe": 100.0,
+        "rtmpose": 100.0,
+        "winner": "tie",
+        "higher_is_better": true
+      },
+      {
+        "metric": "mean_usable_landmark_pct",
+        "mediapipe": 32.03076923076923,
+        "rtmpose": 40.03076923076923,
+        "winner": "rtmpose",
+        "higher_is_better": true
+      },
+      {
+        "metric": "mean_landmark_confidence",
+        "mediapipe": 0.4427684463009173,
+        "rtmpose": 0.41858488495304036,
+        "winner": "mediapipe",
+        "higher_is_better": true
+      },
+      {
+        "metric": "dropout_rate_among_tracked",
+        "mediapipe": 0.013270142180094787,
+        "rtmpose": 0.034866468842729974,
+        "winner": "mediapipe",
+        "higher_is_better": false
+      },
+      {
+        "metric": "mean_jitter_px",
+        "mediapipe": 2.3428855544483196,
+        "rtmpose": 3.59465689220695,
+        "winner": "mediapipe",
+        "higher_is_better": false
+      },
+      {
+        "metric": "effective_fps",
+        "mediapipe": 81.75972251357152,
+        "rtmpose": 6.571821964363125,
+        "winner": "mediapipe",
+        "higher_is_better": true
+      }
+    ],
+    "note": "Coverage is mean usable-landmark percentage across the 13 shared joints. Stability is dropout rate (among joints that were tracked) and temporal jitter. If coverage and stability disagree, overall_raw_tracking is mixed. Speed is reported but not used as a tracking-quality vote. This is not a coaching or technique judgment."
+  },
+  "outputs": {
+    "mediapipe": "/workspace/experiments/rtmpose/results/mediapipe_annotated.mp4",
+    "rtmpose": "/workspace/experiments/rtmpose/results/rtmpose_annotated.mp4",
+    "comparison": "/workspace/experiments/rtmpose/results/comparison_side_by_side.mp4",
+    "json": "/workspace/experiments/rtmpose/results/pose_benchmark.json",
+    "text": "/workspace/experiments/rtmpose/results/pose_benchmark.txt"
+  }
+}
