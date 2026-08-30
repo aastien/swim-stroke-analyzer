@@ -118,10 +118,20 @@ class VideoProcessor:
         temp_path = f"{base}_reenc{ext}"
 
         try:
-            # Verify ffmpeg is available
+            video_path = os.path.abspath(video_path)
+            temp_path = os.path.abspath(temp_path)
+            if not os.path.isfile(video_path):
+                logger.warning(f"ffmpeg re-encode skipped — not a file: {video_path}")
+                return False
+
+            # Verify ffmpeg is available. Always pass an argv list with
+            # shell=False so no user-controlled string is interpreted by a shell.
             subprocess.run(
                 ['ffmpeg', '-version'],
-                capture_output=True, check=True, timeout=10
+                capture_output=True,
+                check=True,
+                timeout=10,
+                shell=False,
             )
 
             result = subprocess.run(
@@ -133,10 +143,11 @@ class VideoProcessor:
                     '-crf', '23',
                     '-acodec', 'aac',
                     '-movflags', '+faststart',  # Progressive download / streaming
-                    temp_path
+                    temp_path,
                 ],
                 capture_output=True,
-                timeout=900  # 15-minute ceiling for very long videos
+                timeout=900,  # 15-minute ceiling for very long videos
+                shell=False,
             )
 
             if result.returncode == 0 and os.path.exists(temp_path):
