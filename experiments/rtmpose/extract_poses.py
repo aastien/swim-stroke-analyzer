@@ -234,6 +234,11 @@ def main() -> int:
         f"{payload['backend']}: {n} frames, "
         f"inference {inf:.2f}s ({(n / inf) if inf > 0 else 0:.2f} fps)"
     )
+    sys.stdout.flush()
+    # MediaPipe's Pose close() can hang on interpreter shutdown. Exit hard so
+    # the orchestrator can start RTMPose. Does not change application code.
+    if args.backend == 'mediapipe':
+        os._exit(0)
     return 0
 
 
