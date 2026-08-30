@@ -88,6 +88,15 @@ def compute_model_metrics(data: Dict[str, Any], fps: float) -> Dict[str, Any]:
         if per_landmark[name]['mean_jitter_px'] is not None
     ]
     dropout_total = sum(per_landmark[name]['dropouts'] for name in COMMON_LANDMARKS)
+    # Dropouts among landmarks that were actually tracked at least once.
+    tracked = [per_landmark[n] for n in COMMON_LANDMARKS if per_landmark[n]['usable_frames'] > 0]
+    tracked_dropouts = sum(p['dropouts'] for p in tracked)
+    tracked_usable = sum(p['usable_frames'] for p in tracked)
+    dropout_rate = (
+        tracked_dropouts / (tracked_usable + tracked_dropouts)
+        if (tracked_usable + tracked_dropouts) else None
+    )
+    mean_usable_pct = float(np.mean([per_landmark[n]['usable_frame_pct'] for n in COMMON_LANDMARKS]))
     inference = float(data.get('inference_seconds') or 0.0)
     effective_fps = (n / inference) if inference > 0 else 0.0
 
@@ -96,8 +105,10 @@ def compute_model_metrics(data: Dict[str, Any], fps: float) -> Dict[str, Any]:
         'frames': n,
         'person_detected_frames': detected,
         'person_detected_pct': (100.0 * detected / n) if n else 0.0,
+        'mean_usable_landmark_pct': mean_usable_pct,
         'mean_landmark_confidence': float(np.mean(all_confidences)) if all_confidences else None,
         'dropouts_total': dropout_total,
+        'dropout_rate_among_tracked': dropout_rate,
         'mean_jitter_px': float(np.mean(jitter_values)) if jitter_values else None,
         'inference_seconds': inference,
         'init_seconds': float(data.get('init_seconds') or 0.0),
@@ -289,16 +300,25 @@ def decide_winner(mp_m: Dict[str, Any], rtm_m: Dict[str, Any]) -> Dict[str, Any]
         return winner
 
     better('person_detected_pct', mp_m['person_detected_pct'], rtm_m['person_detected_pct'], True)
+    better('mean_usable_landmark_pct', mp_m['mean_usable_landmark_pct'], rtm_m['mean_usable_landmark_pct'], True)
     better('mean_landmark_confidence', mp_m['mean_landmark_confidence'], rtm_m['mean_landmark_confidence'], True)
-    better('dropouts_total', mp_m['dropouts_total'], rtm_m['dropouts_total'], False)
+    better('dropout_rate_among_tracked', mp_m['dropout_rate_among_tracked'], rtm_m['dropout_rate_among_tracked'], False)
     better('mean_jitter_px', mp_m['mean_jitter_px'], rtm_m['mean_jitter_px'], False)
     better('effective_fps', mp_m['effective_fps'], rtm_m['effective_fps'], True)
 
-    # Tracking quality votes exclude speed (effective_fps), which is reported separately.
+    # Tracking quality votes exclude speed (effective_fps).
     quality = [c for c in criteria if c['metric'] != 'effective_fps']
     mp_votes = sum(1 for c in quality if c['winner'] == 'mediapipe')
     rtm_votes = sum(1 for c in quality if c['winner'] == 'rtmpose')
-    if mp_votes > rtm_votes:
+    coverage = next(c['winner'] for c in criteria if c['metric'] == 'mean_usable_landmark_pct')
+    stability = [
+        c['winner'] for c in criteria
+        if c['metric'] in ('dropout_rate_among_tracked', 'mean_jitter_px')
+    ]
+    stability_set = set(stability)
+    if coverage != 'tie' and stability_set and coverage not in stability_set and 'tie' not in stability_set:
+        overall = 'mixed'
+    elif mp_votes > rtm_votes:
         overall = 'mediapipe'
     elif rtm_votes > mp_votes:
         overall = 'rtmpose'
@@ -307,12 +327,18 @@ def decide_winner(mp_m: Dict[str, Any], rtm_m: Dict[str, Any]) -> Dict[str, Any]
 
     return {
         'overall_raw_tracking': overall,
+        'coverage_winner': coverage,
+        'stability_winner': (
+            next(iter(stability_set)) if len(stability_set) == 1 else 'mixed'
+        ),
         'quality_votes': {'mediapipe': mp_votes, 'rtmpose': rtm_votes},
         'criteria': criteria,
         'note': (
-            'Overall winner is based on person-detection rate, landmark confidence, '
-            'dropouts, and temporal jitter only. Speed is reported but not used as a '
-            'tracking-quality vote. This is not a coaching or technique judgment.'
+            'Coverage is mean usable-landmark percentage across the 13 shared joints. '
+            'Stability is dropout rate (among joints that were tracked) and temporal jitter. '
+            'If coverage and stability disagree, overall_raw_tracking is mixed. '
+            'Speed is reported but not used as a tracking-quality vote. '
+            'This is not a coaching or technique judgment.'
         ),
     }
 
@@ -333,11 +359,17 @@ def format_text_report(report: Dict[str, Any]) -> str:
         lines.append(f'=== {key.upper()} ===')
         lines.append(f"  Person detected: {m['person_detected_pct']:.2f}% "
                      f"({m['person_detected_frames']}/{m['frames']})")
+        lines.append(f"  Mean usable landmark % (13 joints): {m['mean_usable_landmark_pct']:.2f}%")
         mean_c = m['mean_landmark_confidence']
         lines.append(f"  Mean landmark confidence: {mean_c:.4f}" if mean_c is not None else
                      '  Mean landmark confidence: n/a')
         jitter = m['mean_jitter_px']
+        dr = m.get('dropout_rate_among_tracked')
         lines.append(f"  Landmark dropouts (usable -> missing): {m['dropouts_total']}")
+        lines.append(
+            f"  Dropout rate among tracked joints: {100.0 * dr:.2f}%"
+            if dr is not None else '  Dropout rate among tracked joints: n/a'
+        )
         lines.append(f"  Mean temporal jitter: {jitter:.2f} px" if jitter is not None else
                      '  Mean temporal jitter: n/a')
         lines.append(f"  Inference time: {m['inference_seconds']:.2f}s  "
@@ -354,6 +386,10 @@ def format_text_report(report: Dict[str, Any]) -> str:
         lines.append('')
     winner = report['decision']['overall_raw_tracking']
     lines.append(f'Raw tracking winner: {winner}')
+    lines.append(
+        f"Coverage (usable joints): {report['decision'].get('coverage_winner')}  |  "
+        f"Stability (jitter/dropouts): {report['decision'].get('stability_winner')}"
+    )
     lines.append(report['decision']['note'])
     lines.append('')
     lines.append('Per-criterion winners:')
@@ -415,17 +451,13 @@ def main() -> int:
 
     json_path = os.path.join(args.out_dir, 'pose_benchmark.json')
     txt_path = os.path.join(args.out_dir, 'pose_benchmark.txt')
-    with open(json_path, 'w') as fh:
-        json.dump(report, fh, indent=2)
-    text = format_text_report(report)
-    with open(txt_path, 'w') as fh:
-        fh.write(text)
     report['outputs']['json'] = os.path.abspath(json_path)
     report['outputs']['text'] = os.path.abspath(txt_path)
+    text = format_text_report(report)
     with open(json_path, 'w') as fh:
         json.dump(report, fh, indent=2)
     with open(txt_path, 'w') as fh:
-        fh.write(format_text_report(report))
+        fh.write(text)
     print(text)
     return 0
 

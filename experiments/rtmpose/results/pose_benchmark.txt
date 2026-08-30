@@ -1,0 +1,70 @@
+POSE ESTIMATION BENCHMARK: MediaPipe vs RTMPose
+Scope: raw body tracking only. No coaching metrics.
+Video: /tmp/swim-bench/freestyle_10s.mp4
+Frames compared: 250 at 25.000 fps (854x480)
+Usable confidence threshold: 0.5
+
+=== MEDIAPIPE ===
+  Person detected: 100.00% (250/250)
+  Mean usable landmark % (13 joints): 32.03%
+  Mean landmark confidence: 0.4428
+  Landmark dropouts (usable -> missing): 14
+  Dropout rate among tracked joints: 1.33%
+  Mean temporal jitter: 2.34 px
+  Inference time: 3.06s  init 0.00s  effective 81.76 FPS
+  Per-landmark usable % / mean conf / dropouts / jitter px:
+    nose              usable 100.00%  conf  1.000  dropouts    0  jitter    1.17
+    left_shoulder     usable 100.00%  conf  0.999  dropouts    0  jitter    0.65
+    right_shoulder    usable 100.00%  conf  0.998  dropouts    0  jitter    0.53
+    left_elbow        usable  11.60%  conf  0.774  dropouts    3  jitter    1.61
+    right_elbow       usable   0.00%  conf  0.637  dropouts    0  jitter     n/a
+    left_wrist        usable  86.40%  conf  0.837  dropouts    3  jitter    2.01
+    right_wrist       usable  18.40%  conf  0.493  dropouts    8  jitter    8.09
+    left_hip          usable   0.00%  conf  0.006  dropouts    0  jitter     n/a
+    right_hip         usable   0.00%  conf  0.005  dropouts    0  jitter     n/a
+    left_knee         usable   0.00%  conf  0.006  dropouts    0  jitter     n/a
+    right_knee        usable   0.00%  conf  0.002  dropouts    0  jitter     n/a
+    left_ankle        usable   0.00%  conf  0.000  dropouts    0  jitter     n/a
+    right_ankle       usable   0.00%  conf  0.000  dropouts    0  jitter     n/a
+
+=== RTMPOSE ===
+  Person detected: 100.00% (250/250)
+  Mean usable landmark % (13 joints): 40.03%
+  Mean landmark confidence: 0.4186
+  Landmark dropouts (usable -> missing): 47
+  Dropout rate among tracked joints: 3.49%
+  Mean temporal jitter: 3.59 px
+  Inference time: 38.04s  init 8.86s  effective 6.57 FPS
+  Per-landmark usable % / mean conf / dropouts / jitter px:
+    nose              usable 100.00%  conf  0.964  dropouts    0  jitter    2.28
+    left_shoulder     usable 100.00%  conf  0.776  dropouts    0  jitter    2.42
+    right_shoulder    usable 100.00%  conf  0.740  dropouts    0  jitter    2.74
+    left_elbow        usable  70.00%  conf  0.525  dropouts   19  jitter    4.87
+    right_elbow       usable  50.40%  conf  0.505  dropouts   28  jitter    4.44
+    left_wrist        usable 100.00%  conf  0.740  dropouts    0  jitter    4.81
+    right_wrist       usable   0.00%  conf  0.219  dropouts    0  jitter     n/a
+    left_hip          usable   0.00%  conf  0.135  dropouts    0  jitter     n/a
+    right_hip         usable   0.00%  conf  0.141  dropouts    0  jitter     n/a
+    left_knee         usable   0.00%  conf  0.163  dropouts    0  jitter     n/a
+    right_knee        usable   0.00%  conf  0.256  dropouts    0  jitter     n/a
+    left_ankle        usable   0.00%  conf  0.142  dropouts    0  jitter     n/a
+    right_ankle       usable   0.00%  conf  0.135  dropouts    0  jitter     n/a
+
+Raw tracking winner: mixed
+Coverage (usable joints): rtmpose  |  Stability (jitter/dropouts): mediapipe
+Coverage is mean usable-landmark percentage across the 13 shared joints. Stability is dropout rate (among joints that were tracked) and temporal jitter. If coverage and stability disagree, overall_raw_tracking is mixed. Speed is reported but not used as a tracking-quality vote. This is not a coaching or technique judgment.
+
+Per-criterion winners:
+  person_detected_pct: tie
+  mean_usable_landmark_pct: rtmpose
+  mean_landmark_confidence: mediapipe
+  dropout_rate_among_tracked: mediapipe
+  mean_jitter_px: mediapipe
+  effective_fps: mediapipe
+
+Outputs:
+  mediapipe: /workspace/experiments/rtmpose/results/mediapipe_annotated.mp4
+  rtmpose: /workspace/experiments/rtmpose/results/rtmpose_annotated.mp4
+  comparison: /workspace/experiments/rtmpose/results/comparison_side_by_side.mp4
+  json: /workspace/experiments/rtmpose/results/pose_benchmark.json
+  text: /workspace/experiments/rtmpose/results/pose_benchmark.txt
