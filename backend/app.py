@@ -6,6 +6,7 @@ import time
 import uuid
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
+from typing import Optional
 
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
@@ -259,8 +260,30 @@ def upload_video():
     return jsonify({'video_id': video_id, 'message': 'Upload successful, analysis queued'}), 200
 
 
+def _is_valid_video_id(video_id: str) -> bool:
+    """Reject anything that is not a UUID to prevent path traversal."""
+    try:
+        uuid.UUID(video_id)
+        return True
+    except (ValueError, AttributeError, TypeError):
+        return False
+
+
+def _safe_result_path(video_id: str, filename: str) -> Optional[str]:
+    """Resolve a result file path and ensure it stays under RESULTS_FOLDER."""
+    if not _is_valid_video_id(video_id):
+        return None
+    candidate = os.path.realpath(os.path.join(RESULTS_FOLDER, filename))
+    results_root = os.path.realpath(RESULTS_FOLDER)
+    if not (candidate == results_root or candidate.startswith(results_root + os.sep)):
+        return None
+    return candidate
+
+
 @app.route('/api/status/<video_id>', methods=['GET'])
 def get_status(video_id):
+    if not _is_valid_video_id(video_id):
+        return jsonify({'error': 'Video not found'}), 404
     status = _get_status(video_id)
     if not status:
         return jsonify({'error': 'Video not found'}), 404
@@ -270,14 +293,14 @@ def get_status(video_id):
 @app.route('/api/result/<video_id>/video', methods=['GET'])
 def get_result_video(video_id):
     # Results are always saved as .mp4
-    video_path = os.path.join(RESULTS_FOLDER, f'{video_id}_analyzed.mp4')
-    if os.path.exists(video_path):
+    video_path = _safe_result_path(video_id, f'{video_id}_analyzed.mp4')
+    if video_path and os.path.exists(video_path):
         return send_file(video_path, mimetype='video/mp4', as_attachment=False)
 
     # Fallback: check other extensions (e.g. AVI if re-encode was skipped)
     for ext in ALLOWED_EXTENSIONS:
-        alt_path = os.path.join(RESULTS_FOLDER, f'{video_id}_analyzed.{ext}')
-        if os.path.exists(alt_path):
+        alt_path = _safe_result_path(video_id, f'{video_id}_analyzed.{ext}')
+        if alt_path and os.path.exists(alt_path):
             mimetype = 'video/mp4' if ext == 'mp4' else f'video/{ext}'
             return send_file(alt_path, mimetype=mimetype, as_attachment=False)
 
@@ -286,8 +309,8 @@ def get_result_video(video_id):
 
 @app.route('/api/result/<video_id>/report', methods=['GET'])
 def get_result_report(video_id):
-    report_path = os.path.join(RESULTS_FOLDER, f'{video_id}_report.txt')
-    if not os.path.exists(report_path):
+    report_path = _safe_result_path(video_id, f'{video_id}_report.txt')
+    if not report_path or not os.path.exists(report_path):
         return jsonify({'error': 'Report not found'}), 404
     with open(report_path, 'r') as fh:
         return jsonify({'report': fh.read()}), 200
@@ -302,4 +325,15 @@ def health_check():
 # Entry point (dev server only — production uses gunicorn)
 # ---------------------------------------------------------------------------
 if __name__ == '__main__':
-    app.run(debug=not IS_PRODUCTION, host='0.0.0.0', port=5001)
+    # Local development only: never bind to 0.0.0.0 (that would expose the
+    # Flask dev server on the LAN) and never enable the interactive debugger.
+    DEV_HOST = '127.0.0.1'
+    DEV_PORT = 5001
+    logger.info(f"Starting local Flask server on http://{DEV_HOST}:{DEV_PORT} (debug disabled)")
+    app.run(
+        debug=False,
+        host=DEV_HOST,
+        port=DEV_PORT,
+        use_reloader=False,
+        use_debugger=False,
+    )

@@ -165,10 +165,7 @@ npm run build
 The build files will be in `frontend/build/`
 
 ### Backend Development
-The Flask server runs in debug mode by default, which enables:
-- Auto-reload on code changes
-- Detailed error messages
-- Interactive debugger
+The Flask development server is bound to 127.0.0.1 only, with debug mode disabled.
 
 ## Deployment
 
