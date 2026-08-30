@@ -97,6 +97,7 @@ def extract_mediapipe(frames: List[np.ndarray], width: int, height: int) -> Dict
 def extract_rtmpose(frames: List[np.ndarray], width: int, height: int) -> Dict[str, Any]:
     from rtmlib import Body
 
+    print('Loading RTMPose (onnxruntime cpu / balanced). Weights download locally on first run.', flush=True)
     init_start = time.perf_counter()
     body = Body(backend='onnxruntime', device='cpu', mode='balanced', to_openpose=False)
     init_seconds = time.perf_counter() - init_start
@@ -144,6 +145,8 @@ def extract_rtmpose(frames: List[np.ndarray], width: int, height: int) -> Dict[s
                 person_detected = _person_detected_from_landmarks(landmarks)
 
         inference_seconds += time.perf_counter() - t0
+        if (index + 1) % 25 == 0:
+            print(f'rtmpose frame {index + 1}/{len(frames)}', flush=True)
         records.append({
             'frame_index': index,
             'person_detected': person_detected,
